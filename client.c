@@ -6,8 +6,15 @@
 /*   By: username <your@mail.com>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 18:23:47 by username          #+#    #+#             */
-/*   Updated: 2025/07/20 18:24:02 by username         ###   ########.fr       */
+/*   Updated: 2025/07/20 19:45:00 by username         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+int	main(int argc, char **argv)
+{
+	if (argc == 2)
+		kill(ft_atoi(argv[1]), SIGUSR1);
+	return (0);
+}
