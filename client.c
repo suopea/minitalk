@@ -6,15 +6,84 @@
 /*   By: username <your@mail.com>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 18:23:47 by username          #+#    #+#             */
-/*   Updated: 2025/07/20 19:45:00 by username         ###   ########.fr       */
+/*   Updated: 2025/07/21 18:02:13 by username         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minitalk.h"
+#include <stdio.h>
+
+static void send(int server, char *message);
+static int get_next_bit_as_signal(char c, int *bit);
+static void	handler(int signal, siginfo_t *info, void *context);
+
+t_signal_data g_data;
 
 int	main(int argc, char **argv)
 {
-	if (argc == 2)
-		kill(ft_atoi(argv[1]), SIGUSR1);
+	struct sigaction	sigact;
+	int					server;
+	
+	if (ft_atoi_flew_over(argv[1], &server))
+	{
+		ft_printf("Server pid overflow");
+		return (1);
+	}
+	if (argc != 3)
+	{
+		ft_printf("Provide one and only one argument");
+		return (1);
+	}
+	sigact = install_handler(handler);
+	send(server, argv[2]);
 	return (0);
+}
+
+static void	handler(int signal, siginfo_t *info, void *context)
+{
+	if (signal == SIGINT)
+		g_data.signal = SIGINT;
+	else if (signal == SIGUSR1 || signal == SIGUSR2)
+		g_data.signal = signal;
+	(void)info;
+	(void)context;
+}
+
+static void send(int server, char *message)
+{
+	size_t	index;
+	int		bit;
+
+	index = 0;
+	while (message[index])
+	{
+		g_data.signal = 0;
+		bit = 0;
+		while (bit < 8)
+		{
+			printf("sending bit %i of index %lu\n", bit, index);
+			kill(server, get_next_bit_as_signal(message[index], &bit));
+			while (!g_data.signal)
+				usleep(500);
+			usleep(500);
+		}
+		if (g_data.signal == SIGUSR2)
+		{
+			ft_printf("server says no :(");
+			return ;
+		}
+		index++;
+	}
+}
+
+static int get_next_bit_as_signal(char c, int *bit)
+{
+	int next_bit;
+
+	next_bit = !!(1 << *bit & c);
+	*bit = *bit + 1;
+	if (next_bit)
+		return (SIGUSR2);
+	return (SIGUSR1);
 }

@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: username <your@mail.com>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/20 18:24:27 by username          #+#    #+#             */
-/*   Updated: 2025/07/21 14:22:31 by username         ###   ########.fr       */
+/*   Created: 2025/07/21 12:38:27 by username          #+#    #+#             */
+/*   Updated: 2025/07/21 15:34:53 by username         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
-# include <signal.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include "libft/libft.h"
+#include "minitalk.h"
 
-typedef struct s_signal_data
+struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *))
 {
-	pid_t					sender;
-	volatile sig_atomic_t	signal;
-	volatile sig_atomic_t	length;
-}	t_signal_data;
+	struct sigaction	sigact;
 
-struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *));
-
-#endif
+	sigact.sa_flags = SA_SIGINFO;
+	sigact.sa_sigaction = handler;
+	sigaction(SIGUSR1, &sigact, NULL);
+	sigaction(SIGUSR2, &sigact, NULL);
+	sigaction(SIGINT, &sigact, NULL);
+	return (sigact);
+}
