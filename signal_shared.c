@@ -18,6 +18,7 @@ struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *))
 
 	sigact.sa_flags = SA_SIGINFO;
 	sigact.sa_sigaction = handler;
+	sigemptyset(&sigact.sa_mask);
 	sigaction(SIGUSR1, &sigact, NULL);
 	sigaction(SIGUSR2, &sigact, NULL);
 	sigaction(SIGINT, &sigact, NULL);

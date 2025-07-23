@@ -6,7 +6,7 @@
 /*   By: username <your@mail.com>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 18:23:47 by username          #+#    #+#             */
-/*   Updated: 2025/07/21 18:02:13 by username         ###   ########.fr       */
+/*   Updated: 2025/07/23 15:27:40 by username         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void send(int server, char *message);
 static int get_next_bit_as_signal(char c, int *bit);
 static void	handler(int signal, siginfo_t *info, void *context);
 
-t_signal_data g_data;
+static t_signal_data g_data;
 
 int	main(int argc, char **argv)
 {
@@ -36,6 +36,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	sigact = install_handler(handler);
+	send(server, ft_itoa(ft_strlen(argv[2])));
 	send(server, argv[2]);
 	return (0);
 }
@@ -62,7 +63,7 @@ static void send(int server, char *message)
 		bit = 0;
 		while (bit < 8)
 		{
-			printf("sending bit %i of index %lu\n", bit, index);
+			printf("sending bit %i of index %lu (%c))\n", bit, index, message[index]);
 			kill(server, get_next_bit_as_signal(message[index], &bit));
 			while (!g_data.signal)
 				usleep(500);
@@ -75,6 +76,7 @@ static void send(int server, char *message)
 		}
 		index++;
 	}
+	ft_printf("message sent\n");
 }
 
 static int get_next_bit_as_signal(char c, int *bit)
