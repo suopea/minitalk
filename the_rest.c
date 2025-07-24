@@ -28,7 +28,7 @@ struct sigaction	install_handler(void (*handler)(int, siginfo_t *, void *))
 void	calloc_or_die(char **to_alloc, int size, char **the_other_string,
 			t_signal_data *g_data)
 {
-	(*to_alloc) = calloc(size, 1);
+	(*to_alloc) = ft_calloc(size, 1);
 	if (!(to_alloc))
 	{
 		if (*the_other_string)
@@ -45,7 +45,6 @@ void	initialize(char **length, char **message, t_signal_data *g_data,
 					siginfo_t *info)
 {
 	calloc_or_die(length, 21, message, g_data);
-	length = ft_calloc(21, 1);
 	g_data->sender = info->si_pid;
 	g_data->phase = receiving_length;
 	kill(g_data->sender, SIGUSR1);

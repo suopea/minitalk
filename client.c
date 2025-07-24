@@ -26,12 +26,10 @@ int	main(int argc, char **argv)
 {
 	struct sigaction	sigact;
 	int					server;
+	char				*length;
 
 	if (argc != 3)
-	{
-		ft_printf("Give me one pid and one message\n");
 		return (1);
-	}
 	if (!all_digits(argv[1])
 		|| ft_atoi_flew_over(argv[1], &server) || server < 0)
 	{
@@ -41,10 +39,13 @@ int	main(int argc, char **argv)
 	sigact = install_handler(handler);
 	if (server_says_hi(server))
 	{
-		send(server, ft_itoa(ft_strlen(argv[2])));
+		length = ft_itoa(ft_strlen(argv[2]));
+		if (!length)
+			return (1);
+		send(server, length);
+		free(length);
 		send(server, argv[2]);
 	}
-	(void)sigact;
 	return (0);
 }
 
