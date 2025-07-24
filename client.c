@@ -16,25 +16,26 @@
 #include <stdio.h>
 
 static int	server_says_hi(int server);
-static void send(int server, char *message);
+static void	send(int server, char *message);
 static void	handler(int signal, siginfo_t *info, void *context);
 static void	send_null(int server);
 
-static t_signal_data g_data;
+static t_signal_data	g_data;
 
 int	main(int argc, char **argv)
 {
 	struct sigaction	sigact;
 	int					server;
-	
+
 	if (argc != 3)
 	{
 		ft_printf("Give me one pid and one message\n");
 		return (1);
 	}
-	if (ft_atoi_flew_over(argv[1], &server) || server < 0)
+	if (!all_digits(argv[1])
+		|| ft_atoi_flew_over(argv[1], &server) || server < 0)
 	{
-		ft_printf("I've seen better pid's\n");
+		ft_printf("%s? I've seen better pid's\n", argv[1]);
 		return (1);
 	}
 	sigact = install_handler(handler);
@@ -52,14 +53,20 @@ static int	server_says_hi(int server)
 	int	time_waited;
 
 	time_waited = 0;
+	g_data.signal = 0;
 	kill(server, SIGUSR1);
-	while (time_waited < PATIENCE)
+	while (time_waited <= PATIENCE && !g_data.signal)
 	{
 		usleep(NAPTIME);
 		time_waited++;
 	}
-	ft_printf("I think there's no one there\n");
-	return (0);
+	if (time_waited > PATIENCE)
+	{
+		ft_printf("I think there's no one there\n");
+		return (0);
+	}
+	g_data.signal = 0;
+	return (1);
 }
 
 static void	handler(int signal, siginfo_t *info, void *context)
@@ -72,7 +79,7 @@ static void	handler(int signal, siginfo_t *info, void *context)
 	(void)context;
 }
 
-static void send(int server, char *message)
+static void	send(int server, char *message)
 {
 	size_t	index;
 	int		bit;

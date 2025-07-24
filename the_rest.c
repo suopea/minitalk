@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *))
+struct sigaction	install_handler(void (*handler)(int, siginfo_t *, void *))
 {
 	struct sigaction	sigact;
 
@@ -25,7 +25,8 @@ struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *))
 	return (sigact);
 }
 
-void	calloc_or_die(char **to_alloc, int size, char **the_other_string, t_signal_data *g_data)
+void	calloc_or_die(char **to_alloc, int size, char **the_other_string,
+			t_signal_data *g_data)
 {
 	(*to_alloc) = calloc(size, 1);
 	if (!(to_alloc))
@@ -40,7 +41,8 @@ void	calloc_or_die(char **to_alloc, int size, char **the_other_string, t_signal_
 	}
 }
 
-void	initialize(char **length, char **message, t_signal_data *g_data, siginfo_t *info)
+void	initialize(char **length, char **message, t_signal_data *g_data,
+					siginfo_t *info)
 {
 	calloc_or_die(length, 21, message, g_data);
 	length = ft_calloc(21, 1);
@@ -49,13 +51,27 @@ void	initialize(char **length, char **message, t_signal_data *g_data, siginfo_t 
 	kill(g_data->sender, SIGUSR1);
 }
 
-int get_next_bit_as_signal(char c, int *bit)
+int	get_next_bit_as_signal(char c, int *bit)
 {
-	int next_bit;
+	int	next_bit;
 
 	next_bit = !!(1 << *bit & c);
 	*bit = *bit + 1;
 	if (next_bit)
 		return (SIGUSR2);
 	return (SIGUSR1);
+}
+
+int	all_digits(char *string)
+{
+	int	i;
+
+	i = 0;
+	while (string[i])
+	{
+		if (!ft_isdigit(string[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }

@@ -16,7 +16,7 @@ static void	handler(int signal, siginfo_t *info, void *context);
 static void	receive(int signal, siginfo_t *info);
 static void	add_bit_to_string(int signal, char **str);
 
-static t_signal_data g_data;
+static t_signal_data	g_data;
 
 int	main(void)
 {
@@ -44,7 +44,7 @@ static void	handler(int signal, siginfo_t *info, void *context)
 static void	receive(int signal, siginfo_t *info)
 {
 	static char	*length;
-	static char *message;
+	static char	*message;
 
 	if (g_data.phase == idle)
 		initialize(&length, &message, &g_data, info);

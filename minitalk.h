@@ -37,9 +37,13 @@ typedef struct s_signal_data
 	enum e_phase			phase;
 }	t_signal_data;
 
-struct sigaction	install_handler(void (*handler)(int, siginfo_t *, void *));
-int get_next_bit_as_signal(char c, int *bit);
-void				calloc_or_die(char **to_alloc, int size, char **the_other_string, t_signal_data *g_data);
-void				initialize(char **length, char **message, t_signal_data *g_data, siginfo_t *info);
+struct sigaction	install_handler(
+						void (*handler)(int, siginfo_t *, void *));
+int					all_digits(char *string);
+int					get_next_bit_as_signal(char c, int *bit);
+void				calloc_or_die(char **to_alloc, int size,
+						char **the_other_string, t_signal_data *g_data);
+void				initialize(char **length, char **message,
+						t_signal_data *g_data, siginfo_t *info);
 
 #endif
