@@ -12,10 +12,11 @@
 
 #include "libft/libft.h"
 #include "minitalk.h"
+#include <signal.h>
 #include <stdio.h>
 
+static int	server_says_hi(int server);
 static void send(int server, char *message);
-static int get_next_bit_as_signal(char c, int *bit);
 static void	handler(int signal, siginfo_t *info, void *context);
 static void	send_null(int server);
 
@@ -28,17 +29,36 @@ int	main(int argc, char **argv)
 	
 	if (argc != 3)
 	{
-		ft_printf("Provide one and only one argument\n");
+		ft_printf("Give me one pid and one message\n");
 		return (1);
 	}
-	if (ft_atoi_flew_over(argv[1], &server))
+	if (ft_atoi_flew_over(argv[1], &server) || server < 0)
 	{
-		ft_printf("Server pid overflow\n");
+		ft_printf("I've seen better pid's\n");
 		return (1);
 	}
 	sigact = install_handler(handler);
-	send(server, ft_itoa(ft_strlen(argv[2])));
-	send(server, argv[2]);
+	if (server_says_hi(server))
+	{
+		send(server, ft_itoa(ft_strlen(argv[2])));
+		send(server, argv[2]);
+	}
+	(void)sigact;
+	return (0);
+}
+
+static int	server_says_hi(int server)
+{
+	int	time_waited;
+
+	time_waited = 0;
+	kill(server, SIGUSR1);
+	while (time_waited < PATIENCE)
+	{
+		usleep(NAPTIME);
+		time_waited++;
+	}
+	ft_printf("I think there's no one there\n");
 	return (0);
 }
 
@@ -66,19 +86,17 @@ static void send(int server, char *message)
 		{
 			kill(server, get_next_bit_as_signal(message[index], &bit));
 			while (!g_data.signal)
-				usleep(NAP_TIME);
-			usleep(NAP_TIME);
+				usleep(NAPTIME);
+			usleep(NAPTIME);
 		}
-		printf("\n");
 		if (g_data.signal == SIGUSR2)
 		{
-			ft_printf("server says no :(");
+			ft_printf("server says no :(\n");
 			return ;
 		}
 		index++;
 	}
 	send_null(server);
-	ft_printf("message sent\n");
 }
 
 static void	send_null(int server)
@@ -86,28 +104,13 @@ static void	send_null(int server)
 	int	i;
 
 	i = 0;
-	ft_printf("sending null bit ");
 	while (i < 8)
 	{
 		g_data.signal = 0;
-		ft_printf("%i", i);
 		kill(server, SIGUSR1);
 		while (!g_data.signal)
-			usleep(NAP_TIME);
-		usleep(NAP_TIME);
+			usleep(NAPTIME);
+		usleep(NAPTIME);
 		i++;
 	}
-	ft_printf("\n");
-}
-
-static int get_next_bit_as_signal(char c, int *bit)
-{
-	int next_bit;
-
-	next_bit = !!(1 << *bit & c);
-	printf("%i", next_bit);
-	*bit = *bit + 1;
-	if (next_bit)
-		return (SIGUSR2);
-	return (SIGUSR1);
 }

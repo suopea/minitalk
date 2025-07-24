@@ -24,3 +24,38 @@ struct sigaction install_handler(void (*handler)(int, siginfo_t *, void *))
 	sigaction(SIGINT, &sigact, NULL);
 	return (sigact);
 }
+
+void	calloc_or_die(char **to_alloc, int size, char **the_other_string, t_signal_data *g_data)
+{
+	(*to_alloc) = calloc(size, 1);
+	if (!(to_alloc))
+	{
+		if (*the_other_string)
+		{
+			free(*the_other_string);
+			*the_other_string = NULL;
+		}
+		g_data->phase = idle;
+		kill(g_data->sender, SIGUSR2);
+	}
+}
+
+void	initialize(char **length, char **message, t_signal_data *g_data, siginfo_t *info)
+{
+	calloc_or_die(length, 21, message, g_data);
+	length = ft_calloc(21, 1);
+	g_data->sender = info->si_pid;
+	g_data->phase = receiving_length;
+	kill(g_data->sender, SIGUSR1);
+}
+
+int get_next_bit_as_signal(char c, int *bit)
+{
+	int next_bit;
+
+	next_bit = !!(1 << *bit & c);
+	*bit = *bit + 1;
+	if (next_bit)
+		return (SIGUSR2);
+	return (SIGUSR1);
+}
