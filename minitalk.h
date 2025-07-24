@@ -17,7 +17,7 @@
 # include <unistd.h>
 # include "libft/libft.h"
 
-# define NAPTIME 500
+# define NAPTIME 100
 # define PATIENCE 100
 
 enum e_phase
@@ -31,10 +31,10 @@ enum e_phase
 
 typedef struct s_signal_data
 {
-	pid_t					sender;
+	volatile pid_t			sender;
 	volatile sig_atomic_t	signal;
 	volatile sig_atomic_t	length;
-	enum e_phase			phase;
+	volatile enum e_phase	phase;
 }	t_signal_data;
 
 struct sigaction	install_handler(

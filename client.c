@@ -20,7 +20,7 @@ static void	send(int server, char *message);
 static void	handler(int signal, siginfo_t *info, void *context);
 static void	send_null(int server);
 
-static t_signal_data	g_data;
+static volatile int	g_signal;
 
 int	main(int argc, char **argv)
 {
@@ -53,9 +53,9 @@ static int	server_says_hi(int server)
 	int	time_waited;
 
 	time_waited = 0;
-	g_data.signal = 0;
+	g_signal = 0;
 	kill(server, SIGUSR1);
-	while (time_waited <= PATIENCE && !g_data.signal)
+	while (time_waited <= PATIENCE && !g_signal)
 	{
 		usleep(NAPTIME);
 		time_waited++;
@@ -65,16 +65,16 @@ static int	server_says_hi(int server)
 		ft_printf("I think there's no one there\n");
 		return (0);
 	}
-	g_data.signal = 0;
+	g_signal = 0;
 	return (1);
 }
 
 static void	handler(int signal, siginfo_t *info, void *context)
 {
 	if (signal == SIGINT)
-		g_data.signal = SIGINT;
+		g_signal = SIGINT;
 	else if (signal == SIGUSR1 || signal == SIGUSR2)
-		g_data.signal = signal;
+		g_signal = signal;
 	(void)info;
 	(void)context;
 }
@@ -87,16 +87,16 @@ static void	send(int server, char *message)
 	index = 0;
 	while (message[index])
 	{
-		g_data.signal = 0;
+		g_signal = 0;
 		bit = 0;
 		while (bit < 8)
 		{
 			kill(server, get_next_bit_as_signal(message[index], &bit));
-			while (!g_data.signal)
+			while (!g_signal)
 				usleep(NAPTIME);
 			usleep(NAPTIME);
 		}
-		if (g_data.signal == SIGUSR2)
+		if (g_signal == SIGUSR2)
 		{
 			ft_printf("server says no :(\n");
 			return ;
@@ -113,9 +113,9 @@ static void	send_null(int server)
 	i = 0;
 	while (i < 8)
 	{
-		g_data.signal = 0;
+		g_signal = 0;
 		kill(server, SIGUSR1);
-		while (!g_data.signal)
+		while (!g_signal)
 			usleep(NAPTIME);
 		usleep(NAPTIME);
 		i++;
