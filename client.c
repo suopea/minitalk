@@ -17,6 +17,7 @@
 static void send(int server, char *message);
 static int get_next_bit_as_signal(char c, int *bit);
 static void	handler(int signal, siginfo_t *info, void *context);
+static void	send_null(int server);
 
 static t_signal_data g_data;
 
@@ -25,14 +26,14 @@ int	main(int argc, char **argv)
 	struct sigaction	sigact;
 	int					server;
 	
-	if (ft_atoi_flew_over(argv[1], &server))
-	{
-		ft_printf("Server pid overflow");
-		return (1);
-	}
 	if (argc != 3)
 	{
-		ft_printf("Provide one and only one argument");
+		ft_printf("Provide one and only one argument\n");
+		return (1);
+	}
+	if (ft_atoi_flew_over(argv[1], &server))
+	{
+		ft_printf("Server pid overflow\n");
 		return (1);
 	}
 	sigact = install_handler(handler);
@@ -63,12 +64,12 @@ static void send(int server, char *message)
 		bit = 0;
 		while (bit < 8)
 		{
-			printf("sending bit %i of index %lu (%c))\n", bit, index, message[index]);
 			kill(server, get_next_bit_as_signal(message[index], &bit));
 			while (!g_data.signal)
-				usleep(500);
-			usleep(500);
+				usleep(NAP_TIME);
+			usleep(NAP_TIME);
 		}
+		printf("\n");
 		if (g_data.signal == SIGUSR2)
 		{
 			ft_printf("server says no :(");
@@ -76,7 +77,27 @@ static void send(int server, char *message)
 		}
 		index++;
 	}
+	send_null(server);
 	ft_printf("message sent\n");
+}
+
+static void	send_null(int server)
+{
+	int	i;
+
+	i = 0;
+	ft_printf("sending null bit ");
+	while (i < 8)
+	{
+		g_data.signal = 0;
+		ft_printf("%i", i);
+		kill(server, SIGUSR1);
+		while (!g_data.signal)
+			usleep(NAP_TIME);
+		usleep(NAP_TIME);
+		i++;
+	}
+	ft_printf("\n");
 }
 
 static int get_next_bit_as_signal(char c, int *bit)
@@ -84,6 +105,7 @@ static int get_next_bit_as_signal(char c, int *bit)
 	int next_bit;
 
 	next_bit = !!(1 << *bit & c);
+	printf("%i", next_bit);
 	*bit = *bit + 1;
 	if (next_bit)
 		return (SIGUSR2);

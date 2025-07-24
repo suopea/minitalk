@@ -17,6 +17,8 @@
 # include <unistd.h>
 # include "libft/libft.h"
 
+# define NAP_TIME 500
+
 enum e_phase
 {
 	idle,
