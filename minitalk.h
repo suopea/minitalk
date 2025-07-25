@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: username <your@mail.com>                   +#+  +:+       +#+        */
+/*   By: ssuopea <ssuopea@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/20 18:24:27 by username          #+#    #+#             */
-/*   Updated: 2025/07/23 15:16:59 by username         ###   ########.fr       */
+/*   Created: 2025/07/25 14:46:11 by ssuopea           #+#    #+#             */
+/*   Updated: 2025/07/25 15:08:17 by ssuopea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include "libft/libft.h"
 
 # define NAPTIME 100
-# define PATIENCE 100
+# define PATIENCE 5000
 
 enum e_phase
 {

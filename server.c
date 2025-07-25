@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: username <your@mail.com>                   +#+  +:+       +#+        */
+/*   By: ssuopea <ssuopea@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/21 12:44:26 by username          #+#    #+#             */
-/*   Updated: 2025/07/23 15:25:50 by username         ###   ########.fr       */
+/*   Created: 2025/07/25 14:46:17 by ssuopea           #+#    #+#             */
+/*   Updated: 2025/07/25 15:19:24 by ssuopea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ static void	receive(int signal, siginfo_t *info)
 		calloc_or_die(&message, ft_atoi(length) + 1, &length, &g_data);
 		free(length);
 		length = NULL;
-		g_data.phase += 1;
+		if (message)
+			g_data.phase += 1;
 		return ;
 	}
 	if (g_data.phase == receiving_message)
@@ -75,8 +76,8 @@ static void	add_bit_to_string(int signal, char **str)
 	static int		bit_position;
 	static size_t	index;
 
-	bit_to_add = !!(signal == SIGUSR2);
-	(*str)[index] = bit_to_add << bit_position | (*str)[index];
+	bit_to_add = signal == SIGUSR2;
+	(*str)[index] += bit_to_add << bit_position;
 	bit_position++;
 	if (bit_position == 8)
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: username <your@mail.com>                   +#+  +:+       +#+        */
+/*   By: ssuopea <ssuopea@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/20 18:23:47 by username          #+#    #+#             */
-/*   Updated: 2025/07/23 15:27:40 by username         ###   ########.fr       */
+/*   Created: 2025/07/25 14:46:03 by ssuopea           #+#    #+#             */
+/*   Updated: 2025/07/25 15:17:52 by ssuopea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,17 @@
 #include <signal.h>
 #include <stdio.h>
 
-static int	server_says_hi(int server);
-static void	send(int server, char *message);
+static int	server_says_hi(pid_t server);
+static int	send(pid_t server, char *message);
 static void	handler(int signal, siginfo_t *info, void *context);
-static void	send_null(int server);
+static void	send_null(pid_t server);
 
-static volatile int	g_signal;
+static volatile sig_atomic_t	g_signal;
 
 int	main(int argc, char **argv)
 {
 	struct sigaction	sigact;
-	int					server;
+	pid_t				server;
 	char				*length;
 
 	if (argc != 3)
@@ -42,28 +42,25 @@ int	main(int argc, char **argv)
 		length = ft_itoa(ft_strlen(argv[2]));
 		if (!length)
 			return (1);
-		send(server, length);
+		if (send(server, length))
+			send(server, argv[2]);
 		free(length);
-		send(server, argv[2]);
 	}
 	return (0);
 }
 
-static int	server_says_hi(int server)
+static int	server_says_hi(pid_t server)
 {
-	int	time_waited;
-
-	time_waited = 0;
-	g_signal = 0;
 	kill(server, SIGUSR1);
-	while (time_waited <= PATIENCE && !g_signal)
-	{
-		usleep(NAPTIME);
-		time_waited++;
-	}
-	if (time_waited > PATIENCE)
+	usleep(PATIENCE);
+	if (!g_signal)
 	{
 		ft_printf("I think there's no one there\n");
+		return (0);
+	}
+	if (g_signal == SIGUSR2)
+	{
+		ft_printf("Length malloc fail\n");
 		return (0);
 	}
 	g_signal = 0;
@@ -80,7 +77,7 @@ static void	handler(int signal, siginfo_t *info, void *context)
 	(void)context;
 }
 
-static void	send(int server, char *message)
+static int	send(pid_t server, char *message)
 {
 	size_t	index;
 	int		bit;
@@ -100,14 +97,15 @@ static void	send(int server, char *message)
 		if (g_signal == SIGUSR2)
 		{
 			ft_printf("server says no :(\n");
-			return ;
+			return (0);
 		}
 		index++;
 	}
 	send_null(server);
+	return (1);
 }
 
-static void	send_null(int server)
+static void	send_null(pid_t server)
 {
 	int	i;
 

@@ -8,6 +8,7 @@ OBJ = $(SRC:.c=.o)
 OBJ_CLIENT = $(SRC_CLIENT:.c=.o)
 OBJ_SHARED = $(SRC_SHARED:.c=.o)
 FLAGS = -Wall -Wextra -Werror
+HEADER = minitalk.h
 
 all: $(NAME) $(NAME_CLIENT)
 
@@ -21,7 +22,7 @@ $(LIBFT):
 	make -C libft
 	make -C libft clean
 
-%.o: %.c
+%.o: %.c $(HEADER)
 	cc $(FLAGS) -c $<
 
 clean:

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   the_rest.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: username <your@mail.com>                   +#+  +:+       +#+        */
+/*   By: ssuopea <ssuopea@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/21 12:38:27 by username          #+#    #+#             */
-/*   Updated: 2025/07/21 15:34:53 by username         ###   ########.fr       */
+/*   Created: 2025/07/25 14:46:23 by ssuopea           #+#    #+#             */
+/*   Updated: 2025/07/25 15:19:02 by ssuopea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	calloc_or_die(char **to_alloc, int size, char **the_other_string,
 			t_signal_data *g_data)
 {
 	(*to_alloc) = ft_calloc(size, 1);
-	if (!(to_alloc))
+	if (!(*to_alloc))
 	{
 		if (*the_other_string)
 		{
@@ -44,10 +44,11 @@ void	calloc_or_die(char **to_alloc, int size, char **the_other_string,
 void	initialize(char **length, char **message, t_signal_data *g_data,
 					siginfo_t *info)
 {
-	calloc_or_die(length, 21, message, g_data);
 	g_data->sender = info->si_pid;
 	g_data->phase = receiving_length;
-	kill(g_data->sender, SIGUSR1);
+	calloc_or_die(length, 21, message, g_data);
+	if (*length)
+		kill(g_data->sender, SIGUSR1);
 }
 
 int	get_next_bit_as_signal(char c, int *bit)
