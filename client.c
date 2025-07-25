@@ -6,14 +6,11 @@
 /*   By: ssuopea <ssuopea@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 14:46:03 by ssuopea           #+#    #+#             */
-/*   Updated: 2025/07/25 15:17:52 by ssuopea          ###   ########.fr       */
+/*   Updated: 2025/07/25 15:20:21 by ssuopea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/libft.h"
 #include "minitalk.h"
-#include <signal.h>
-#include <stdio.h>
 
 static int	server_says_hi(pid_t server);
 static int	send(pid_t server, char *message);
